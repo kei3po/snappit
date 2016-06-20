@@ -1,0 +1,4 @@
+.git/*
+build.sh
+shell.sh
+run.sh
