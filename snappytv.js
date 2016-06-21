@@ -51,11 +51,11 @@ exports.loadTimelineObject = (url, resolve, reject) => {
   });
 
   clarinetStream.on('key', (key) => {
-    console.log(key);
+    //console.log(key);
   });
 
   clarinetStream.on('value', (value) => {
-    console.log(value);
+    //console.log(value);
   });
 
   clarinetStream.on('end', () => {
