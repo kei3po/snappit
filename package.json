@@ -10,7 +10,8 @@
   "author": "keith nielsen",
   "license": "ISC",
   "dependencies": {
-    "clarinet": "^0.11.0"
+    "clarinet": "^0.11.0",
+    "oboe": "^2.1.2"
   },
   "devDependencies": {
     "babel-cli": "^6.8.0",

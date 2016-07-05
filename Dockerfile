@@ -1,4 +1,4 @@
-FROM node:6
+FROM node:4
 MAINTAINER keith nielsen <nielsen.keith@gmail.com>
 COPY package.json .babelrc /opt/snappit/
 WORKDIR /opt/snappit

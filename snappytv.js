@@ -1,4 +1,5 @@
 import * as http from "http";
+import oboe from "oboe";
 import * as clarinet from "clarinet";
 
 const clarinetOptions = {
@@ -6,8 +7,8 @@ const clarinetOptions = {
   normalize: false
 };
 
-exports.loadEvents = (url, resolve, reject) => {
-  var eventUrls = [];
+exports.getTimelineURLs = (url, resolve, reject) => {
+  var timelineURLs = [];
   var parseValue = false;
 
   var clarinetStream = clarinet.createStream(clarinetOptions);
@@ -23,13 +24,13 @@ exports.loadEvents = (url, resolve, reject) => {
 
   clarinetStream.on('value', (value) => {
     if (parseValue) {
-      eventUrls.push(value);
+      timelineURLs.push(value);
     }
     parseValue = false;
   });
 
   clarinetStream.on('end', () => {
-    resolve(eventUrls);
+    resolve(timelineURLs);
   });
 
   var req = http.get(url, (res) => {
@@ -43,28 +44,32 @@ exports.loadEvents = (url, resolve, reject) => {
 };
 
 exports.loadTimelineObject = (url, resolve, reject) => {
-  var response = {};
-
-  var clarinetStream = clarinet.createStream(clarinetOptions);
-  clarinetStream.on('error', (e) => {
-    reject(e);
-  });
-
-  clarinetStream.on('key', (key) => {
-    //console.log(key);
-  });
-
-  clarinetStream.on('value', (value) => {
-    //console.log(value);
-  });
-
-  clarinetStream.on('end', () => {
-    resolve(response);
-  });
-
   var req = http.get(url, (res) => {
     res.setEncoding('utf8');
-    res.pipe(clarinetStream);
+    oboe(res).done((timelineObject) => {
+      resolve(timelineObject);
+    }).fail(reject);
+  });
+
+  req.on('error', (e) => {
+    reject(e);
+  });
+};
+
+exports.getVODDownloads = (url, resolve, reject) => {
+  var req = http.get(url, (res) => {
+    res.setEncoding('utf8');
+    oboe(res).done((timelineObject) => {
+      var downloads = [];
+      timelineObject.tracks["0"].forEach((item => {
+        if (item.type == "snap" && item.downloads && item.downloads.length > 0) {
+          item.downloads.forEach((download) => {
+            downloads.push(download)
+          });
+        }
+      }));
+      resolve(downloads);
+    }).fail(reject);
   });
 
   req.on('error', (e) => {
